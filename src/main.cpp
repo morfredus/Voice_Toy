@@ -6,17 +6,17 @@
 #include <Arduino.h>
 #include "core/app.h"
 #include "project_config.h"
-#include "modules/example_module/example_module.h"
+#include "modules/voice_toy/voice_toy_module.h"
 #ifdef ENABLE_BOOT_LOG
 #include "modules/boot_log/boot_log.h"
 #endif
 
-static ExampleModule exampleModule;
+static VoiceToyModule voiceToyModule;
 
 void setup() {
     Serial.begin(115200);
 
-    app.modules.add(&exampleModule);
+    app.modules.add(&voiceToyModule);
 #ifdef ENABLE_BOOT_LOG
     app.modules.add(&bootLogModule);
 #endif

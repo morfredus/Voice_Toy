@@ -44,9 +44,9 @@
 
 // --- Réseau ---
 #define WEB_SERVER_PORT        80
-#define MDNS_HOSTNAME           "esp32-foundation"
-#define WIFI_CONNECT_TIMEOUT_MS 15000
-#define WIFI_PORTAL_AP_NAME     "ESP32-Setup"
+#define MDNS_HOSTNAME           "voice-toy"
+#define WIFI_CONNECT_TIMEOUT_MS 2500
+#define WIFI_PORTAL_AP_NAME     "VoiceToy-Setup"
 
 // --- Temps (NTP) ---
 #define TIME_ZONE   "UTC"
