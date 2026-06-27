@@ -1,0 +1,5 @@
+(function () { var page = location.pathname; var links = [ ["/", "Accueil"], ["/system", "Système"], ["/files", "Fichiers"], ["/logs", "Logs"], ["/ota", "Mise à jour"], ]; var nav = document.createElement("nav"); function addLink(l) { var a = document.createElement("a"); a.href = l[0]; a.textContent = l[1]; if (page === l[0]) a.className = "active"; nav.appendChild(a); } links.forEach(addLink); var header = document.createElement("header"); var h1 = document.createElement("h1"); if (document.title) { h1.textContent = document.title; } else { fetch("/api/system").then(function (r) { return r.json(); }).then(function (data) { h1.textContent = data.project; }); } header.appendChild(h1); header.appendChild(nav); document.body.insertBefore(header, document.body.firstChild);
+  // Lien "Debug" affiché uniquement si le module BootLog est actif (ENABLE_BOOT_LOG) —
+  // sondage de la route /api/bootlog, absente quand le module est désactivé/retiré.
+  fetch("/api/bootlog").then(function (r) { if (r.ok) addLink(["/debug", "Debug"]); }).catch(function () {});
+})();

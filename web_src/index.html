@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title id="page-title">Accueil</title><link rel="stylesheet" href="style.css"></head><body><main><div class="card"><h2>Bienvenue</h2><p>Ce projet utilise le framework <strong id="project-name-1">ce framework</strong>.</p><p>Personnalisez cette page (<code>web_src/index.html</code>) pour votre projet métier.</p></div></main><script src="menu.js"></script><script>
+// Récupère le nom du projet courant (défini via PROJECT_NAME côté firmware)
+// pour l'afficher dynamiquement ici, plutôt que d'écrire le nom en dur dans
+// cette page HTML. Ainsi, renommer le projet (voir docs/INTEGRATION_GUIDE.md)
+// n'exige aucune modification de ce fichier.
+fetch('/api/system').then(function (r) { return r.json(); }).then(function (data) {
+  document.getElementById('project-name-1').textContent = data.project;
+  document.title = data.project;
+});
+</script></body></html>
