@@ -1,6 +1,5 @@
 /**
  * WiFiManager — Connexion WiFi multi-réseaux, NVS, portail captif, mDNS.
- * (généralisé depuis Gateway Lab V1)
  *
  * Hiérarchie de configuration (priorité décroissante) :
  *   1. Réseaux enregistrés en NVS (Preferences, namespace "wifi")

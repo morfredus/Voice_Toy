@@ -1,5 +1,5 @@
 /**
- * LogManager — Journalisation unifiée (fusion Gateway Lab + MeteoHub)
+ * LogManager — Journalisation unifiée de Voice Toy
  *
  * Sorties :
  *   - Port série (toujours, format horodaté avec niveau et tag)

@@ -1,187 +1,122 @@
-# ESP32-Foundation
+# Voice Toy
 
-Framework applicatif générique pour projets ESP32 (PlatformIO / Arduino),
-extrait et généralisé à partir de **Gateway Lab V1** et **MeteoHub-S3**.
+Voice Toy est actuellement une base firmware ESP32-S3 avec une petite console
+web. Cette révision ne contient pas encore de module de traitement audio, de
+microphone, de sortie haut-parleur ou d'effets vocaux. Le firmware réellement
+présent dans le dépôt fournit :
 
-*Read this in English: [README.md](README.md)*
+- Connexion WiFi avec identifiants enregistrés et portail de configuration de
+  secours.
+- Interface web servie depuis LittleFS.
+- Mise à jour firmware depuis le navigateur et par ArduinoOTA.
+- Logs série avec tampon JSON consultable dans le navigateur.
+- Informations système au format JSON.
+- Liste, envoi, téléchargement et suppression de fichiers LittleFS.
+- Diagnostic optionnel BootLog pour les raisons de redémarrage et les derniers
+  logs avant reboot.
 
-ESP32 Foundation est un framework d'applications réutilisable, issu de
-projets ESP32 concrets tels que Gateway Lab et MeteoHub. Il fournit des
-services communs comme la gestion du Wi-Fi, les mises à jour OTA, la
-journalisation, le stockage, une interface web, le routage API et des outils
-de compilation, permettant ainsi aux nouveaux projets de se concentrer sur
-les fonctionnalités spécifiques à leur application.
+La cible PlatformIO est `esp32-s3-devkitc-1-n16r8v` avec le framework Arduino.
 
-Ce framework n'a pas été conçu en premier. Il a été extrait ultérieurement
-de plusieurs projets ESP32 après avoir identifié les composants qui étaient
-fréquemment réutilisés.
+## Organisation du projet
 
-Le framework fournit l'infrastructure commune à tout projet ESP32 connecté
-(WiFi, serveur web, logs, OTA, stockage, configuration persistante,
-informations système, mDNS, heure réseau) à travers un système de **modules**
-optionnels : le framework ne connaît jamais le code métier, le métier ne
-connaît jamais l'implémentation des services.
-
-## Structure
-
-```
-ESP32-Foundation/
-├── platformio.ini
-├── README.md                       version anglaise
-├── README.fr.md                    ce fichier
-├── CHANGELOG.md                    historique des versions
-├── VERSION
-├── web_src/                         sources de l'interface web (HTML/CSS/JS), à modifier ici
-│       debug.html                  page /debug, servie seulement si ENABLE_BOOT_LOG
-│       files.html
-│       index.html
-│       logs.html
-│       menu.js
-│       ota.html
-│       style.css
-│       system.html
-├── data/                            généré par tools/minify_web.py depuis web_src/, ne pas modifier - servi depuis LittleFS
-├── docs/
-│       ARCHITECTURE.md
-│       BOOT_LOG.md                 module optionnel BootLog (journal de redémarrage)
-│       INTEGRATION_GUIDE.md
-│       WIFI_SETUP.md              premier démarrage, secrets.h, portail de configuration
-├── examples/
-│   ├── api/                        exemple de routage API (GET/POST/JSON)
-│   │       platformio.ini
-│   │       include/project_config.h
-│   │       src/api_module.cpp, api_module.h, main.cpp
-│   ├── example_project/            exemple historique (module "Blink")
-│   │       platformio.ini
-│   │       include/project_config.h
-│   │       src/blink_module.cpp, blink_module.h, main.cpp
-│   ├── minimal/                    exemple le plus simple (cycle de vie seul)
-│   │       platformio.ini
-│   │       include/project_config.h
-│   │       src/main.cpp, minimal_module.cpp, minimal_module.h
-│   └── sensor/                     exemple capteur simulé + config persistante
-│           platformio.ini
-│           include/project_config.h
-│           src/main.cpp, sensor_module.cpp, sensor_module.h
+```text
+.
 ├── include/
-│       board_config.h              brochage générique
-│       project_config.h            réglages globaux du framework
-│       secrets_example.h           modèle pour include/secrets.h (gitignored)
+│   ├── board_config.h          Notes de brochage ESP32-S3
+│   ├── project_config.h        Options et réglages du projet
+│   └── secrets_example.h       Modèle optionnel d'identifiants WiFi
 ├── src/
-│   │   main.cpp                    point d'entrée du projet racine
-│   ├── api/
-│   │   └── api_router/
-│   │           api_router.h        WebRouter
-│   ├── core/
-│   │       app.cpp, app.h          orchestrateur App
-│   │       module.h                classe Module
-│   │       module_manager.h        ModuleManager
-│   ├── modules/
-│   │   ├── example_module/
-│   │   │       example_module.cpp, example_module.h
-│   │   └── boot_log/                optionnel, désactivé par défaut — voir docs/BOOT_LOG.md
-│   │           boot_log.cpp, boot_log.h
-│   └── services/
-│       ├── config_manager/         config_manager.cpp, config_manager.h
-│       ├── log_manager/            log_manager.cpp, log_manager.h
-│       ├── mdns_manager/           mdns_manager.cpp, mdns_manager.h
-│       ├── ota_manager/            ota_manager.cpp, ota_manager.h
-│       ├── storage_manager/        storage_manager.cpp, storage_manager.h
-│       ├── system_info/            system_info.cpp, system_info.h
-│       ├── time_manager/           time_manager.cpp, time_manager.h
-│       ├── web_manager/            web_manager.cpp, web_manager.h
-│       └── wifi_manager/           wifi_manager.cpp, wifi_manager.h
-└── tools/
-        build_info.py
-        minify_web.py
-        package_web.py
-        release.py
-        version_generator.py
+│   ├── main.cpp                Enregistre les modules et démarre App
+│   ├── api/api_router/         Adaptateur léger autour de WebServer
+│   ├── core/                   App, Module et ModuleManager
+│   ├── modules/boot_log/       Module optionnel de diagnostic reboot
+│   └── services/               WiFi, web, OTA, logs, stockage, config, mDNS...
+├── web_src/                    Sources HTML/CSS/JS modifiables
+├── docs/
+│   ├── BOOT_LOG.md             Guide utilisateur BootLog
+│   └── WIFI_SETUP.md           Guide de première connexion WiFi
+├── tools/                      Scripts de build, release et packaging web
+├── platformio.ini
+├── VERSION
+└── CHANGELOG.md
 ```
 
-## Démarrage rapide
+Le dossier `data/` est généré depuis `web_src/` par `tools/minify_web.py`. Il
+ne doit pas être modifié à la main.
+
+## Compiler et flasher
 
 ```bash
-cp include/secrets_example.h include/secrets.h   # WiFi de développement (optionnel)
-pio run                                            # compile le firmware
-pio run --target uploadfs                          # flashe data/ (interface web, générée depuis web_src/)
-pio run --target upload                            # flashe le firmware
+pio run
+python tools/minify_web.py
+pio run --target uploadfs
+pio run --target upload
 ```
 
-Au premier démarrage, si aucun réseau WiFi n'est encore connu (pas de
-`secrets.h` et rien d'enregistré), l'ESP32 démarre un point d'accès de
-configuration permettant de saisir le SSID et le mot de passe depuis un
-téléphone ou un ordinateur. Voir
-[docs/WIFI_SETUP.md](docs/WIFI_SETUP.md) pour le déroulé complet.
+Il faut exécuter `uploadfs` au moins une fois après le flash d'une nouvelle
+carte, sinon les pages web stockées dans LittleFS seront absentes.
 
-Important : exécuter `pio run -t uploadfs` au moins une fois après le tout
-premier flash (et à chaque modification de `web_src/`) — sans cette étape,
-l'interface web LittleFS est vide et toute page renvoie une page blanche ou
-une erreur 404, même si le firmware fonctionne correctement. Voir l'explication
-détaillée dans
-[docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md#téléverser-linterface-web-littlefs--éviter-la-page-blanche-au-premier-démarrage).
+Pour utiliser des identifiants WiFi de développement :
 
-Pour changer le nom du projet (logs, `/api/system`, interface web), voir la
-section [Renommer le projet](docs/INTEGRATION_GUIDE.md#renommer-le-projet)
-du guide d'intégration.
+```bash
+cp include/secrets_example.h include/secrets.h
+```
 
-Voir [docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) pour démarrer un
-nouveau projet, et [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) pour le détail
-des choix de conception et leur origine (Gateway Lab / MeteoHub).
+Si aucun réseau connu n'est disponible au démarrage, l'ESP32 démarre le point
+d'accès `ESP32-Setup`. Voir [docs/WIFI_SETUP.md](docs/WIFI_SETUP.md).
 
-## Exemples fournis
+## Interface web
 
-| Exemple | Description |
-|---|---|
-| `examples/example_project/` | Module "Blink" minimal pilotant la LED embarquée — exemple historique de référence. |
-| `examples/minimal/` | Le module le plus simple possible : cycle de vie `begin()/loop()` uniquement, sans capteur ni route HTTP. À lire en premier. |
-| `examples/sensor/` | Lecture périodique d'une valeur simulée, intervalle de lecture configurable et persistant, route HTTP `GET /api/sensor/value`. |
-| `examples/api/` | Trois routes HTTP de démonstration via `WebRouter` : GET simple, GET avec paramètre de requête, POST avec corps JSON et validation. |
+Une fois connecté au WiFi, ouvrir :
 
-Chaque exemple est un projet PlatformIO autonome (voir son propre
-`platformio.ini`, qui référence le framework via `lib_extra_dirs = ../../`).
-Le guide complet, pas à pas, pour créer son propre module à partir de ces
-exemples se trouve dans
-[docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md#créer-son-premier-module-pas-à-pas).
+- `http://voicetoy.local/` si mDNS fonctionne sur le réseau.
+- Ou l'adresse IP affichée dans le moniteur série.
 
-## Services fournis
+Pages fournies par `web_src/` :
 
-| Service          | Rôle                                                         |
-|-------------------|---------------------------------------------------------------|
-| `wifiMgr`         | Multi-réseaux NVS, portail captif de secours, reconnexion auto |
-| `webMgr`          | Serveur HTTP : `/`, `/logs`, `/files`, `/system`, `/ota`        |
-| `otaMgr`          | Mise à jour firmware (ArduinoOTA + upload web)                |
-| `storage`         | Fichiers LittleFS (lecture/écriture/liste/suppression)         |
-| `config`          | Réglages persistants clé/valeur (NVS)                          |
-| `logMgr`          | Logs série + tampon JSON (`LOG_INFO`, `LOG_ERROR`, ...)         |
-| `systemInfo`      | État système en JSON (heap, version, WiFi, build...)           |
-| `mdnsMgr`         | Résolution `http://<hostname>.local`                            |
-| `timeMgr`         | Synchronisation NTP                                              |
+- `/` accueil.
+- `/system` informations système depuis `GET /api/system`.
+- `/files` navigateur LittleFS.
+- `/logs` consultation des logs en mémoire.
+- `/ota` téléversement d'un firmware.
+- `/debug` page BootLog quand `ENABLE_BOOT_LOG` est activé.
 
-Aucune dépendance métier n'est imposée : chaque service est utilisable
-indépendamment des autres.
+## API HTTP
 
-## Modules optionnels
+Routes principales :
 
-| Module | Rôle |
-|---|---|
-| `exampleModule` | Module de démonstration minimal (`src/modules/example_module/`), toujours actif. |
-| `bootLogModule` | Journal de redémarrage (raison du reset, derniers logs, instantané système avant crash). **Désactivé par défaut**, à activer avec `#define ENABLE_BOOT_LOG` dans `include/project_config.h`. Le lien de menu `/debug` apparaît automatiquement (`web_src/menu.js` sonde `GET /api/bootlog`) — aucune édition du menu nécessaire dans un sens comme dans l'autre. Exemple concret de module entièrement supprimable — voir [docs/BOOT_LOG.md](docs/BOOT_LOG.md). |
+- `GET /api/system`
+- `GET /api/logs`
+- `DELETE /api/logs`
+- `GET /api/files/list?path=/`
+- `GET /api/files/download?path=/nom`
+- `DELETE /api/files/delete?path=/nom`
+- `POST /api/files/upload`
+- `POST /api/ota/update`
 
-## Captures d'écran
+Routes BootLog, uniquement si le module est actif :
 
-| Page | Capture |
-|---|---|
-| Accueil (`/`) | ![Accueil](docs/pictures/ESP32-Foundation-Accueil.jpeg) |
-| Système (`/system`) | ![Système](docs/pictures/ESP32-Foundation-Systeme.jpeg) |
-| Fichiers (`/files`) | ![Fichiers](docs/pictures/ESP32-Foundation-Fichiers.jpeg) |
-| Logs (`/logs`) | ![Logs](docs/pictures/ESP32-Foundation-Logs.jpeg) |
-| Mise à jour (`/ota`) | ![Mise à jour](docs/pictures/ESP32-Foundation-Mise-a-Jour.jpeg) |
+- `GET /api/bootlog`
+- `DELETE /api/bootlog`
 
-## Journal des modifications
+## Configuration
 
-Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique des versions.
+Les réglages principaux sont dans `include/project_config.h` :
 
-## Licence
+- `PROJECT_NAME`, valeur de repli du nom projet.
+- `WEB_SERVER_PORT`
+- `MDNS_HOSTNAME`
+- `WIFI_CONNECT_TIMEOUT_MS`
+- `WIFI_PORTAL_AP_NAME`
+- Les options `ENABLE_WIFI`, `ENABLE_WEB_SERVER`, `ENABLE_OTA`,
+  `ENABLE_MDNS` et `ENABLE_BOOT_LOG`.
 
-Distribué sous [licence MIT](LICENSE).
+`platformio.ini` injecte aussi `PROJECT_NAME="Voice Toy"` lors des builds
+normaux.
+
+## Périmètre actuel
+
+Cette documentation décrit volontairement le code présent dans le dépôt. Les
+fonctions de transformation de voix ne sont pas encore implémentées. Elles
+devront être ajoutées comme vrais modules dans `src/modules/` lorsque le
+matériel audio et le comportement attendu seront définis.

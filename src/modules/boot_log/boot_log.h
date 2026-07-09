@@ -24,7 +24,7 @@
  * Suppression complète si plus nécessaire :
  *   1. Retirer le bloc ENABLE_BOOT_LOG de log_manager.cpp (capture des logs).
  *   2. Retirer l'instanciation conditionnelle dans main.cpp.
- *   3. Retirer data/debug.html et son entrée dans data/menu.js.
+ *   3. Retirer web_src/debug.html et la sonde /api/bootlog dans web_src/menu.js.
  *   4. Supprimer ce dossier (src/modules/boot_log/) et la macro
  *      ENABLE_BOOT_LOG / les constantes associées dans project_config.h.
  *   Aucune autre partie du framework ne dépend de ce module.

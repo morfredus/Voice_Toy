@@ -1,5 +1,5 @@
 /**
- * WebManager — Serveur HTTP du framework (généralisé depuis MeteoHub).
+ * WebManager — Serveur HTTP de Voice Toy.
  *
  * Fournit automatiquement, sans code métier :
  *   GET  /            — page d'accueil (data/index.html)

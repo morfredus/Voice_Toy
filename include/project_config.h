@@ -10,7 +10,7 @@
  */
 
 #ifndef PROJECT_NAME
-#define PROJECT_NAME "ESP32-Foundation"
+#define PROJECT_NAME "Voice Toy"
 #endif
 #ifndef PROJECT_VERSION
 #define PROJECT_VERSION "0.0.0-dev"
@@ -44,7 +44,7 @@
 
 // --- Réseau ---
 #define WEB_SERVER_PORT        80
-#define MDNS_HOSTNAME           "esp32-foundation"
+#define MDNS_HOSTNAME           "voicetoy"
 #define WIFI_CONNECT_TIMEOUT_MS 15000
 #define WIFI_PORTAL_AP_NAME     "ESP32-Setup"
 

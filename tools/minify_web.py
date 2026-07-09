@@ -2,16 +2,15 @@
 """
 minify_web.py — Minifie les sources web de web_src/ (.html, .css, .js) et
 écrit le résultat dans data/. data/ est l'image servie depuis LittleFS :
-c'est un dossier généré, jamais édité à la main. Contrairement à Gateway
-Lab/MeteoHub, ESP32-Foundation sert ces fichiers directement depuis LittleFS
-(pas de génération de headers PROGMEM) : ce script ne fait que réduire leur
-taille pour économiser de l'espace flash, sans changer leur contenu
-fonctionnel.
+c'est un dossier généré, jamais édité à la main. Voice Toy sert ces fichiers
+directement depuis LittleFS (pas de génération de headers PROGMEM) : ce script
+ne fait que réduire leur taille pour économiser de l'espace flash, sans
+changer leur contenu fonctionnel.
 
 Lancement volontairement manuel (absent de extra_scripts dans
 platformio.ini) : la minification n'a de raison de s'exécuter que lorsque
 web_src/ change, pas à chaque compilation du firmware. Voir
-docs/INTEGRATION_GUIDE.md pour le workflow complet, et tools/release.py
+README.fr.md pour le workflow complet, et tools/release.py
 pour l'enchaînement automatique dans un pipeline de release.
 
 Usage :
@@ -100,7 +99,10 @@ def prompt_uploadfs() -> None:
     if not sys.stdin.isatty():
         # Lancement non interactif (ex. tools/release.py) : pas de prompt.
         return
-    reply = input("Téléverser data/ vers LittleFS maintenant (pio run --target uploadfs) ? [o/N] ").strip().lower()
+    try:
+        reply = input("Téléverser data/ vers LittleFS maintenant (pio run --target uploadfs) ? [o/N] ").strip().lower()
+    except EOFError:
+        return
     if reply in ("o", "oui", "y", "yes"):
         subprocess.run(["pio", "run", "--target", "uploadfs"])
 
